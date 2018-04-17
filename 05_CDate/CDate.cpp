@@ -5,6 +5,12 @@ CDate::CDate()
 {
     //ctor
 }
+CDate::CDate(const CDate &Date)
+{
+    iNgay=Date.iNgay;
+    iThang=Date.iThang;
+    iNam=Date.iNam;
+}
 CDate::CDate(int x=1,int y=1,int z=1999)
 {
     iNgay = x;
@@ -22,37 +28,25 @@ bool CDate::isNhuan()
     else
         return false;
 }
-bool CDate::isDayMax()
+int CDate::DayinMonth()
 {
-    if (iThang==1 || iThang==3 || iThang==5 || iThang==7 || iThang==8 || iThang==10 || iThang==12)
-    {
-        if (iNgay >31)
-            return true;
-        else return false;
-    }
+   if (iThang==1 || iThang==3 || iThang==5 || iThang==7 || iThang==8 || iThang==10 || iThang==12)
+        return 31;
     else
         if (iThang==4 || iThang==6 || iThang==9 || iThang==11)
-        {
-            if (iNgay >30)
-                return true;
-            else return false;
-        }
-    else
-    {
-        if (this->isNhuan()==true)
-        {
-            if (iNgay >29)
-                return true;
-            else
-                return false;
-        }
+            return 30;
         else
         {
-            if (iNgay >28)
-                return true;
-            else return false;
+            if (this->isNhuan()==true)
+                return 29;
+            else return 28;
         }
-    }
+}
+bool CDate::isDayMax()
+{
+    if (iNgay>this->DayinMonth())
+        return true;
+    else return false;
 }
 istream& operator>>(istream& is,CDate& Date)
 {
@@ -66,11 +60,12 @@ ostream& operator<<(ostream& os,CDate& Date)
 }
 CDate CDate::operator+(int iSoNgay)
 {
-    iNgay+=iSoNgay;
+    CDate Date(*this);
+    Date.iNgay=iNgay+iSoNgay;
     if (this->isDayMax()==true)
     {
-        iThang+=1;
-        iNgay=1;
+        Date.iThang+=1;
+        Date.iNgay=1;
     }
     if (iThang==12)
     {
@@ -82,5 +77,15 @@ CDate CDate::operator+(int iSoNgay)
 }
 CDate CDate::operator-(int iSoNgay)
 {
-    if (iNgay--==0)
+    CDate Date(*this);
+    if (Date.iNgay<=iSoNgay)
+    {
+        Date.iThang-=1;
+        Date.iNgay=Date.DayinMonth()-(iSoNgay-Date.iNgay);
+    }
+    else
+    {
+        Date.iNgay-=iSoNgay;
+    }
+    return Date;
 }
